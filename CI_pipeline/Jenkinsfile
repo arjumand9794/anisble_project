@@ -42,9 +42,18 @@ pipeline {
 
     stage('Ansible Configure') {
       steps {
-        sshagent(credentials: ['arj.pem']) {
+        withCredentials([
+          sshUserPrivateKey(
+            credentialsId: 'arj.pem',
+            keyFileVariable: 'SSH_KEY'
+          )
+        ]) {
           dir('CI_pipeline/Ansible') {
-            sh 'ansible-playbook -i inventory site.yml'
+            sh '''
+              chmod 600 $SSH_KEY
+              ansible-playbook -i inventory site.yml \
+                --private-key $SSH_KEY
+            '''
           }
         }
       }
@@ -52,6 +61,7 @@ pipeline {
 
   }
 }
+
 
 
 
