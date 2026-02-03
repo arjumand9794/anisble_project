@@ -44,14 +44,16 @@ pipeline {
       steps {
         withCredentials([
           sshUserPrivateKey(
-            credentialsId: 'arj.pem',
-            keyFileVariable: 'SSH_KEY'
+            credentialsId: 'ec2-user',
+            keyFileVariable: 'SSH_KEY',
+            usernameVariable: 'SSH_USER'
           )
         ]) {
           dir('CI_pipeline/Ansible') {
             sh '''
               chmod 600 $SSH_KEY
               ansible-playbook -i inventory site.yml \
+                --user $SSH_USER \
                 --private-key $SSH_KEY
             '''
           }
@@ -61,6 +63,7 @@ pipeline {
 
   }
 }
+
 
 
 
