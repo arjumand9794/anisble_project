@@ -5,13 +5,13 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        git 'https://github.com/your-repo/devops-ci-challenge.git'
+        git 'https://github.com/arjumand9794/anisble_project.git'
       }
     }
 
     stage('Terraform Init') {
       steps {
-        dir('terraform') {
+        dir('CI_pipeline/Terraform') {
           sh 'terraform init'
         }
       }
@@ -19,7 +19,7 @@ pipeline {
 
     stage('Terraform Apply') {
       steps {
-        dir('terraform') {
+        dir('CI_pipeline/Terraform') {
           sh 'terraform apply -auto-approve'
         }
       }
@@ -27,10 +27,13 @@ pipeline {
 
     stage('Ansible Configure') {
       steps {
-        dir('ansible') {
-          sh 'ansible-playbook -i inventory site.yml'
+        sshagent(credentials: ['arj.pem']) {
+          dir('CI_pipeline/Ansible') {
+            sh 'ansible-playbook -i inventory site.yml'
+          }
         }
       }
     }
   }
 }
+
