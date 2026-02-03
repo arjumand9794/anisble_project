@@ -1,9 +1,20 @@
-- name: Install Netdata
-  shell: curl -s https://my-netdata.io/kickstart.sh | bash
+- name: Install required packages (Ubuntu)
+  apt:
+    name:
+      - curl
+      - sudo
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install Netdata (official installer)
+  shell: |
+    curl -fsSL https://get.netdata.cloud/kickstart.sh | bash
   args:
     creates: /usr/sbin/netdata
+  become: yes
 
-- name: Ensure Netdata running
+- name: Ensure Netdata is running
   service:
     name: netdata
     state: started
