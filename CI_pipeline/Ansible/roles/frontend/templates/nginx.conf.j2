@@ -1,11 +1,17 @@
 events {}
 
 http {
+  upstream backend_netdata {
+    server {{ hostvars[groups['backend'][0]].ansible_host }}:19999;
+  }
+
   server {
     listen 80;
 
     location / {
-      proxy_pass http://{{ groups['backend'][0] }}:19999;
+      proxy_pass http://backend_netdata;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
     }
   }
 }
