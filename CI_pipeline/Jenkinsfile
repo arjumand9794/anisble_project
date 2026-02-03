@@ -5,13 +5,14 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        git 'https://github.com/arjumand9794/anisble_project.git'
+        git branch: 'main',
+            url: 'https://github.com/arjumand9794/anisble_project.git'
       }
     }
 
     stage('Terraform Init') {
       steps {
-        dir('CI_pipeline/Terraform') {
+        dir('CI_pipeline/Terraform') 
           sh 'terraform init'
         }
       }
@@ -36,4 +37,5 @@ pipeline {
     }
   }
 }
+
 
