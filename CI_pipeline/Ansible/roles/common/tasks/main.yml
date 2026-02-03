@@ -1,6 +1,7 @@
-- name: Disable SELinux
-  selinux:
-    state: disabled
+- name: Check if firewalld exists
+  shell: systemctl list-unit-files | grep -q firewalld
+  register: firewalld_check
+  ignore_errors: yes
   when: ansible_os_family == "RedHat"
 
 - name: Stop firewalld
@@ -8,11 +9,6 @@
     name: firewalld
     state: stopped
     enabled: false
-  when: ansible_os_family == "RedHat"
-
-- name: Stop UFW
-  service:
-    name: ufw
-    state: stopped
-    enabled: false
-  when: ansible_os_family == "Debian"
+  when:
+    - ansible_os_family == "RedHat"
+    - firewalld_check.rc == 0
